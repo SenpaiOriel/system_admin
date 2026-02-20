@@ -51,19 +51,198 @@
       </svg>
     </div>
 
-    <!-- Dark / Light theme toggle - outside the form -->
-    <div v-if="!showAdmin" class="theme-toggle-wrap theme-toggle-outside" role="switch" :aria-checked="isDark" aria-label="Light or dark mode">
-      <button type="button" class="theme-toggle" @click="isDark = !isDark" :class="{ dark: isDark, light: !isDark }">
-        <span class="toggle-track">
-          <span class="toggle-pill"></span>
-        </span>
-        <span class="toggle-labels"><span class="toggle-dark">Dark</span><span class="toggle-light">Light</span></span>
-      </button>
-    </div>
-
     <main v-if="!showAdmin" class="setup-card">
+      <!-- Theme toggle: top-right of card (image: inside card, darker strip #3D3A54) -->
+      <div class="card-top-bar" role="presentation">
+        <div class="theme-toggle-wrap theme-toggle-on-card" role="switch" :aria-checked="isDark" aria-label="Light or dark mode">
+          <button type="button" class="theme-toggle" @click="isDark = !isDark" :class="{ dark: isDark, light: !isDark }">
+            <span class="toggle-track">
+              <span class="toggle-pill"></span>
+            </span>
+            <span class="toggle-labels"><span class="toggle-dark">Dark</span><span class="toggle-light">Light</span></span>
+          </button>
+        </div>
+      </div>
       <template v-if="!setupComplete">
-        <registration-form />
+      <div class="setup-form-inner">
+      <div class="logo-holder" :class="{ 'has-image': agency.logoDataUrl }">
+        <img v-if="agency.logoDataUrl" :src="agency.logoDataUrl" alt="Agency logo" class="logo-holder-img">
+        <template v-else>{{ t.logoHolder }}<br><span>{{ t.logoHolderHint }}</span></template>
+      </div>
+      <header class="card-header">
+        <p class="welcome-text">{{ t.welcome }}</p>
+        <div class="system-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="system-icon-svg">
+            <!-- Central node: pale yellow/beige with outline -->
+            <circle cx="24" cy="24" r="8" class="icon-center"/>
+            <!-- Central node internal connection lines (light blue) -->
+            <line x1="24" y1="17" x2="24" y2="19" class="icon-inner-line"/>
+            <line x1="24" y1="29" x2="24" y2="31" class="icon-inner-line"/>
+            <line x1="17" y1="24" x2="19" y2="24" class="icon-inner-line"/>
+            <line x1="29" y1="24" x2="31" y2="24" class="icon-inner-line"/>
+            <!-- Connecting lines (light blue, slightly curved) -->
+            <path d="M 24 19 Q 24 12 24 8" class="icon-connector"/>
+            <path d="M 24 29 Q 24 36 24 40" class="icon-connector"/>
+            <path d="M 19 24 Q 12 24 8 24" class="icon-connector"/>
+            <path d="M 29 24 Q 36 24 40 24" class="icon-connector"/>
+            <!-- Top & bottom nodes: pale beige circles with X inside -->
+            <circle cx="24" cy="8" r="3.5" class="icon-node-pale"/>
+            <line x1="22.2" y1="6.2" x2="25.8" y2="9.8" class="icon-node-line"/>
+            <line x1="25.8" y1="6.2" x2="22.2" y2="9.8" class="icon-node-line"/>
+            <circle cx="24" cy="40" r="3.5" class="icon-node-pale"/>
+            <line x1="22.2" y1="38.2" x2="25.8" y2="41.8" class="icon-node-line"/>
+            <line x1="25.8" y1="38.2" x2="22.2" y2="41.8" class="icon-node-line"/>
+            <!-- Left & right: pink clusters (3 small shapes each) -->
+            <circle cx="9" cy="22" r="1.8" class="icon-node-pink"/>
+            <circle cx="9" cy="26" r="1.8" class="icon-node-pink"/>
+            <circle cx="6" cy="24" r="1.8" class="icon-node-pink"/>
+            <circle cx="39" cy="22" r="1.8" class="icon-node-pink"/>
+            <circle cx="39" cy="26" r="1.8" class="icon-node-pink"/>
+            <circle cx="42" cy="24" r="1.8" class="icon-node-pink"/>
+          </svg>
+        </div>
+        <h1 class="system-title">CVALTIS SYSTEM</h1>
+        <p class="system-subtitle text-underline">{{ t.systemSubtitle }}</p>
+        <p class="instruction-text text-underline">{{ t.instruction }}</p>
+      </header>
+      <transition name="step-fade" mode="out-in">
+        <section v-if="step === 1" key="step1" class="card-body card-body-lang">
+          <h2 class="step-title">{{ t.step1Title }}</h2>
+          <div class="field-row">
+            <div class="select-wrap">
+              <select v-model="selectedLanguage" class="input input-select" aria-label="Language">
+                <option value="">{{ t.selectLanguagePlaceholder }}</option>
+                <option value="en">ENGLISH</option>
+                <option value="tl">TAGALOG</option>
+              </select>
+              <span class="select-chevron">▾</span>
+            </div>
+          </div>
+        </section>
+        <section v-else-if="step === 2" key="step2" class="card-body card-body-agency">
+          <div class="instructional-box">
+            <p class="section-label">{{ t.step2Intro }}</p>
+            <p class="section-sublabel">{{ t.step3Sublabel }}</p>
+          </div>
+          <hr class="section-rule">
+          <div class="agency-fields">
+            <div class="field-row"><input type="text" class="input" :placeholder="t.agencyName" v-model="agency.name"></div>
+            <div class="field-row"><input type="text" class="input" :placeholder="t.agencyEmail" v-model="agency.email"></div>
+            <div class="field-row"><input type="text" class="input" :placeholder="t.agencyAddress" v-model="agency.address"></div>
+            <div class="field-row">
+              <label class="logo-upload-btn">
+              <input type="file" accept="image/*" class="input-file-hidden" @change="onAgencyLogoChange" aria-label="Upload business logo">
+                <span class="input input-with-icon logo-upload-label">{{ agency.logoDataUrl ? t.changeLogo : t.agencyLogo }}</span>
+                <span class="input-icon input-icon-upload" aria-hidden="true">↑</span>
+              </label>
+            </div>
+          </div>
+        </section>
+        <section v-else-if="step === 3" key="step3" class="card-body card-body-owner">
+          <div class="instructional-box">
+            <p class="section-label section-label-owner">{{ t.step3Intro }}</p>
+            <p class="section-sublabel">{{ t.step3Sublabel }}</p>
+          </div>
+          <div class="owner-row">
+            <label class="owner-avatar-wrap">
+              <input type="file" accept="image/*" class="input-file-hidden" @change="onOwnerProfileChange" aria-label="Upload profile photo">
+              <div class="owner-avatar" :class="{ 'has-image': owner.profileDataUrl }" aria-hidden="true">
+                <img v-if="owner.profileDataUrl" :src="owner.profileDataUrl" alt="Profile" class="owner-avatar-img">
+                <svg v-else viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="avatar-svg"><circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 56c0-11 8.954-20 20-20s20 9 20 20" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                <span v-if="owner.profileDataUrl" class="owner-avatar-checkmark" aria-hidden="true">✓</span>
+              </div>
+              <span class="owner-avatar-upload-hint">{{ owner.profileDataUrl ? t.changePhoto : t.uploadProfile }}</span>
+            </label>
+            <div class="owner-fields">
+              <div class="field-row field-with-icon field-icon-right owner-field-col1">
+                <input type="text" class="input" :placeholder="t.lastName" v-model="owner.lastName">
+                <span class="field-icon field-icon-person" aria-hidden="true">👤</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col2">
+                <input type="text" class="input" :placeholder="t.firstName" v-model="owner.firstName">
+                <span class="field-icon field-icon-person" aria-hidden="true">👤</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col1">
+                <input type="text" class="input" :placeholder="t.middleName" v-model="owner.middleName">
+                <span class="field-icon field-icon-person" aria-hidden="true">👤</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col2">
+                <input type="email" class="input" :placeholder="t.email" v-model="owner.email">
+                <span class="field-icon field-icon-email" aria-hidden="true">✉</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col1">
+                <input type="text" class="input" :placeholder="t.dateOfBirth" v-model="owner.dob">
+                <span class="field-icon field-icon-calendar" aria-hidden="true">📅</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col2">
+                <input type="text" class="input" :placeholder="t.homeAddress" v-model="owner.address">
+                <span class="field-icon field-icon-pin" aria-hidden="true">📍</span>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col1">
+                <input :type="showOwnerPassword ? 'text' : 'password'" class="input" :placeholder="t.password" v-model="owner.password">
+                <button type="button" class="input-icon-btn" @click="showOwnerPassword = !showOwnerPassword" :aria-label="showOwnerPassword ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ showOwnerPassword ? '🙈' : '👁' }}</span></button>
+              </div>
+              <div class="field-row field-with-icon field-icon-right owner-field-col2">
+                <input :type="showOwnerConfirm ? 'text' : 'password'" class="input" :placeholder="t.confirmPassword" v-model="owner.confirmPassword">
+                <button type="button" class="input-icon-btn" @click="showOwnerConfirm = !showOwnerConfirm" :aria-label="showOwnerConfirm ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ showOwnerConfirm ? '🙈' : '👁' }}</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section v-else-if="step === 4" key="step4" class="card-body card-body-email">
+          <div class="instructional-box">
+            <p class="section-label">{{ t.step4Intro }}</p>
+            <p class="section-sublabel">{{ t.step3Sublabel }}</p>
+          </div>
+          <p class="email-verify-instruction" v-if="!emailVerified">{{ t.emailVerifyInstruction }} <strong>{{ owner.email || t.yourEmail }}</strong>.</p>
+          <p class="email-verify-instruction email-verified-msg" v-else>{{ t.emailVerifiedMsg }}</p>
+          <div class="field-row field-with-icon field-icon-right-only" v-if="!emailVerified">
+            <input type="text" class="input input-with-icon" :placeholder="t.emailVerifyCode" v-model="emailVerificationCode" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+            <span class="field-icon field-icon-key" aria-hidden="true">🔑</span>
+          </div>
+          <div class="email-verify-buttons" v-if="!emailVerified">
+            <button type="button" class="btn btn-resend" :disabled="authLoading" @click="resendCode">{{ t.resendCode }}</button>
+            <button type="button" class="btn btn-verify" :disabled="authLoading" @click="verifyEmail">{{ t.verify }}</button>
+          </div>
+        </section>
+        <section v-else-if="step === 5" key="step5" class="card-body card-body-authenticator">
+          <div class="instructional-box">
+            <p class="section-label">{{ t.step5Intro }}</p>
+            <p class="section-sublabel">{{ t.step3Sublabel }}</p>
+          </div>
+          <p class="authenticator-instruction">{{ t.authenticatorInstruction }}</p>
+          <div class="authenticator-row">
+            <div class="qr-block">
+              <div class="qr-placeholder" aria-hidden="true">
+                <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR code for authenticator" class="qr-img">
+                <span v-else class="qr-inner">QR Code</span>
+              </div>
+              <p class="setup-key-label">{{ t.setupKey }}: <code class="setup-key">{{ setupKey }}</code></p>
+            </div>
+            <div class="otp-block">
+              <div class="field-row">
+                <input :type="showOtp ? 'text' : 'password'" class="input input-with-icon" :placeholder="t.enterOtp" v-model="otpCode" maxlength="6">
+                <button type="button" class="input-icon-btn" @click="showOtp = !showOtp" :aria-label="showOtp ? 'Hide OTP' : 'Show OTP'">
+                  <span class="input-icon input-icon-eye">{{ showOtp ? '🙈' : '👁' }}</span>
+                </button>
+              </div>
+              <button type="button" class="btn btn-check-otp" @click="checkOtp">{{ t.checkOtp }}</button>
+            </div>
+          </div>
+        </section>
+      </transition>
+      <p class="error-handler" :class="{ visible: errorMessage }">{{ errorMessage || t.errorHandler }}</p>
+      <div class="progress-row">
+        <div class="progress-dots">
+          <span v-for="n in totalDots" :key="n" class="dot" :class="{ active: n <= step }"></span>
+        </div>
+        <p class="progress-label text-underline">{{ stepLabels[step - 1] }}</p>
+      </div>
+      <footer class="card-footer">
+        <button type="button" class="btn btn-prev" :disabled="step <= 1" @click="prevStep" @mousedown="buttonClick" @mouseup="buttonRelease" @mouseleave="buttonRelease">{{ t.previous }}</button>
+        <button type="button" class="btn btn-next" :disabled="authLoading" @click="nextStep" @mousedown="buttonClick" @mouseup="buttonRelease" @mouseleave="buttonRelease">{{ step >= totalSteps ? t.finish : t.next }}</button>
+      </footer>
+      </div>
       </template>
       <div v-else class="setup-complete">
         <p class="setup-complete-title">{{ t.setupCompleteTitle }}</p>
@@ -150,10 +329,8 @@
   <script>
     (function() {
       var createApp = Vue.createApp;
-
-      function createSetupApp() {
-        return createApp({
-          data: function() {
+      createApp({
+      data: function() {
         var saved = typeof localStorage !== 'undefined' && localStorage.getItem('cvaltis-theme');
         var isDark = saved === null ? true : saved === 'dark';
         return {
@@ -183,9 +360,6 @@
           pluginSearch: '',
           plugins: [],
         };
-      },
-      provide: function() {
-        return { setup: this };
       },
       computed: {
         lang() {
@@ -437,23 +611,7 @@
           e.target.value = '';
         },
       },
-        });
-      }
-
-      fetch('registration-form-template.html')
-        .then(function(r) { return r.text(); })
-        .then(function(registrationFormTemplate) {
-          var app = createSetupApp();
-          app.component('RegistrationForm', {
-            template: registrationFormTemplate,
-            inject: ['setup']
-          });
-          app.mount('#app');
-        })
-        .catch(function() {
-          var appEl = document.getElementById('app');
-          if (appEl) appEl.innerHTML = '<main class="setup-card"><p>Failed to load registration form. Refresh the page.</p></main>';
-        });
+    }).mount('#app');
     })();
   </script>
 </body>
