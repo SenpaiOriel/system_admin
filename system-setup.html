@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Setup - CVALTIS</title>
+  <link rel="stylesheet" href="system-setup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1/build/qrcode.min.js"></script>
+  <script src="system-setup-auth.js"></script>
+  <div id="app" class="setup-wrap theme-dark" :class="isDark ? 'theme-dark' : 'theme-light'">
+    <!-- Circuit background: cyan lines and nodes -->
+    <div class="circuit-bg" aria-hidden="true">
+      <svg class="circuit-svg" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Nodes (glowing dots) -->
+        <circle cx="200" cy="120" r="5" class="node"/>
+        <circle cx="1000" cy="100" r="5" class="node"/>
+        <circle cx="1050" cy="280" r="5" class="node"/>
+        <circle cx="150" cy="380" r="5" class="node"/>
+        <circle cx="1100" cy="450" r="5" class="node"/>
+        <circle cx="80" cy="600" r="5" class="node"/>
+        <circle cx="1050" cy="720" r="5" class="node"/>
+        <circle cx="220" cy="800" r="5" class="node"/>
+        <circle cx="600" cy="80" r="5" class="node"/>
+        <circle cx="580" cy="820" r="5" class="node"/>
+        <!-- Lines from card area outward -->
+        <path d="M 380 200 L 200 200 L 200 120" class="line"/>
+        <path d="M 820 200 L 1000 200 L 1000 100" class="line"/>
+        <path d="M 820 350 L 1000 350 L 1050 280" class="line"/>
+        <path d="M 380 450 L 200 450 L 150 380" class="line"/>
+        <path d="M 820 500 L 1050 500 L 1100 450" class="line"/>
+        <path d="M 400 650 L 150 650 L 80 600" class="line"/>
+        <path d="M 800 700 L 1000 700 L 1050 720" class="line"/>
+        <path d="M 400 750 L 280 750 L 220 800" class="line"/>
+        <path d="M 600 250 L 600 80" class="line"/>
+        <path d="M 600 650 L 600 820" class="line"/>
+        <path d="M 380 320 L 280 320 L 280 380" class="line"/>
+        <path d="M 820 320 L 920 320 L 920 400" class="line"/>
+      </svg>
+    </div>
+
+    <main class="setup-card">
+      <template v-if="!setupComplete">
+      <!-- Dark / Light mode toggle (pill) -->
+      <div class="theme-toggle-wrap" role="switch" :aria-checked="!isDark" aria-label="Dark or light mode">
+        <button type="button" class="theme-toggle" @click="isDark = !isDark" :class="{ dark: isDark, light: !isDark }">
+          <span class="toggle-track">
+            <span class="toggle-pill"></span>
+          </span>
+          <span class="toggle-labels"><span class="toggle-dark">Dark</span><span class="toggle-light">Light</span></span>
+        </button>
+      </div>
+      <!-- Logo placeholder -->
+      <div class="logo-holder">AGENCY LOGO HOLDER<br><span>Appears after uploading Logo</span></div>
+
+      <header class="card-header">
+        <p class="welcome-text">Welcome to the</p>
+        <div class="system-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="system-icon-svg">
+            <circle cx="24" cy="24" r="8" class="icon-center"/>
+            <circle cx="24" cy="10" r="4" class="icon-node"/>
+            <circle cx="38" cy="24" r="4" class="icon-node"/>
+            <circle cx="24" cy="38" r="4" class="icon-node"/>
+            <circle cx="10" cy="24" r="4" class="icon-node"/>
+            <line x1="24" y1="18" x2="24" y2="14" class="icon-line"/>
+            <line x1="32" y1="24" x2="34" y2="24" class="icon-line"/>
+            <line x1="24" y1="32" x2="24" y2="34" class="icon-line"/>
+            <line x1="16" y1="24" x2="14" y2="24" class="icon-line"/>
+          </svg>
+        </div>
+        <h1 class="system-title">CVALTIS SYSTEM</h1>
+        <p class="system-subtitle text-underline">A Centralized Virtual Administration of Local Transaction and Integrated Services System.</p>
+        <p class="instruction-text text-underline">Just fill in the information below to setup the system to your liking.</p>
+      </header>
+
+      <!-- Step content with transitions -->
+      <transition name="step-fade" mode="out-in">
+        <!-- Step 1: Language (dropdown only) -->
+        <section v-if="step === 1" key="step1" class="card-body">
+          <h2 class="step-title">Select your language</h2>
+          <p class="step-title-tagalog">Pumili ng iyong wika</p>
+          <div class="field-row">
+            <div class="select-wrap">
+              <select v-model="selectedLanguage" class="input input-select" aria-label="Language">
+                <option value="">Select language...</option>
+                <option value="en">ENGLISH</option>
+                <option value="tl">TAGALOG</option>
+              </select>
+              <span class="select-chevron">▾</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2: Agency info -->
+        <section v-else-if="step === 2" key="step2" class="card-body">
+          <h2 class="section-label">This collects the basic information of the company / agency.</h2>
+          <hr class="section-rule">
+          <div class="field-row"><input type="text" class="input" placeholder="Agency / Business Name" v-model="agency.name"></div>
+          <div class="field-row"><input type="text" class="input" placeholder="Agency / Business Address" v-model="agency.address"></div>
+          <div class="field-row"><input type="email" class="input" placeholder="Agency / Business Email" v-model="agency.email"></div>
+          <div class="field-row">
+            <input type="text" class="input input-with-icon" placeholder="Agency / Business Logo" readonly>
+            <span class="input-icon input-icon-upload" aria-hidden="true">↓</span>
+          </div>
+        </section>
+
+        <!-- Step 3: System Owner Registration (owner info form) -->
+        <section v-else-if="step === 3" key="step3" class="card-body card-body-owner">
+        <p class="section-label">This collects the owner / head's information.</p>
+        <p class="section-sublabel">The appointed <u>System Admin</u> should assist.</p>
+        <div class="owner-row">
+          <div class="owner-avatar" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="avatar-svg"><circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 56c0-11 8.954-20 20-20s20 9 20 20" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </div>
+          <div class="owner-fields">
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-person">👤</span>
+              <input type="text" class="input" placeholder="Last Name" v-model="owner.lastName">
+            </div>
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-person">👤</span>
+              <input type="text" class="input" placeholder="First Name" v-model="owner.firstName">
+            </div>
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-person">👤</span>
+              <input type="text" class="input" placeholder="Middle Name" v-model="owner.middleName">
+            </div>
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-email">✉</span>
+              <input type="email" class="input" placeholder="Email" v-model="owner.email">
+            </div>
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-calendar">📅</span>
+              <input type="text" class="input" placeholder="Date of Birth" v-model="owner.dob">
+            </div>
+            <div class="field-row field-with-icon">
+              <span class="field-icon field-icon-pin">📍</span>
+              <input type="text" class="input" placeholder="Home Address" v-model="owner.address">
+            </div>
+            <div class="field-row field-with-icon">
+              <input :type="showOwnerPassword ? 'text' : 'password'" class="input input-with-icon" placeholder="Password" v-model="owner.password">
+              <button type="button" class="input-icon-btn" @click="showOwnerPassword = !showOwnerPassword" :aria-label="showOwnerPassword ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ showOwnerPassword ? '🙈' : '👁' }}</span></button>
+            </div>
+            <div class="field-row field-with-icon">
+              <input :type="showOwnerConfirm ? 'text' : 'password'" class="input input-with-icon" placeholder="Confirm Password" v-model="owner.confirmPassword">
+              <button type="button" class="input-icon-btn" @click="showOwnerConfirm = !showOwnerConfirm" :aria-label="showOwnerConfirm ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ showOwnerConfirm ? '🙈' : '👁' }}</span></button>
+            </div>
+          </div>
+        </div>
+        </section>
+
+        <!-- Step 4: Email verification -->
+        <section v-else-if="step === 4" key="step4" class="card-body">
+          <p class="section-label">This collects the owner / head's information.</p>
+          <p class="section-sublabel">The appointed <u>System Admin</u> should assist.</p>
+          <p class="email-verify-instruction" v-if="!emailVerified">Type in the verification code we sent to <strong>{{ owner.email || 'your email' }}</strong>.</p>
+          <p class="email-verify-instruction email-verified-msg" v-else>Email verified. Click NEXT to continue.</p>
+          <div class="field-row field-with-icon field-icon-right-only" v-if="!emailVerified">
+            <input type="text" class="input input-with-icon" placeholder="Email Verification Code" v-model="emailVerificationCode" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+            <span class="field-icon field-icon-key" aria-hidden="true">🔑</span>
+          </div>
+          <div class="email-verify-buttons" v-if="!emailVerified">
+            <button type="button" class="btn btn-resend" :disabled="authLoading" @click="resendCode">RESEND CODE</button>
+            <button type="button" class="btn btn-verify" :disabled="authLoading" @click="verifyEmail">VERIFY</button>
+          </div>
+        </section>
+
+        <!-- Step 5: Authenticator / OTP setup -->
+        <section v-else-if="step === 5" key="step5" class="card-body card-body-authenticator">
+        <p class="section-label">This collects the owner / head's information.</p>
+        <p class="section-sublabel">The appointed <u>System Admin</u> should assist.</p>
+        <p class="authenticator-instruction">Install an Authenticator app and use it to scan the QR code or enter the key to get a login OTP.</p>
+        <div class="authenticator-row">
+          <div class="qr-block">
+            <div class="qr-placeholder" aria-hidden="true">
+              <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR code for authenticator" class="qr-img">
+              <span v-else class="qr-inner">QR Code</span>
+            </div>
+            <p class="setup-key-label">Setup Key: <code class="setup-key">{{ setupKey }}</code></p>
+          </div>
+          <div class="otp-block">
+            <div class="field-row">
+              <input :type="showOtp ? 'text' : 'password'" class="input input-with-icon" placeholder="Enter OTP" v-model="otpCode" maxlength="6">
+              <button type="button" class="input-icon-btn" @click="showOtp = !showOtp" :aria-label="showOtp ? 'Hide OTP' : 'Show OTP'">
+                <span class="input-icon input-icon-eye">{{ showOtp ? '🙈' : '👁' }}</span>
+              </button>
+            </div>
+            <button type="button" class="btn btn-check-otp" @click="checkOtp">CHECK OTP</button>
+          </div>
+        </div>
+        </section>
+      </transition>
+
+      <p class="error-handler" :class="{ visible: errorMessage }">{{ errorMessage || 'Error Handler message' }}</p>
+
+      <div class="progress-row">
+        <div class="progress-dots">
+          <span v-for="n in totalDots" :key="n" class="dot" :class="{ active: n <= step }"></span>
+        </div>
+        <p class="progress-label text-underline">{{ stepLabels[step - 1] }}</p>
+      </div>
+
+      <footer class="card-footer">
+        <button type="button" class="btn btn-prev" :disabled="step <= 1" @click="prevStep" @mousedown="buttonClick" @mouseup="buttonRelease" @mouseleave="buttonRelease">PREVIOUS</button>
+        <button type="button" class="btn btn-next" :disabled="authLoading" @click="nextStep" @mousedown="buttonClick" @mouseup="buttonRelease" @mouseleave="buttonRelease">{{ step >= totalSteps ? 'FINISH' : 'NEXT' }}</button>
+      </footer>
+      </template>
+      <div v-else class="setup-complete">
+        <p class="setup-complete-title">Setup complete</p>
+        <p class="setup-complete-msg">You can now sign in with your email and password.</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          isDark: true,
+          step: 1,
+          totalSteps: 5,
+          totalDots: 10,
+          selectedLanguage: '',
+          agency: { name: '', address: '', email: '' },
+          owner: { lastName: '', firstName: '', middleName: '', email: '', dob: '', address: '', password: '', confirmPassword: '' },
+          showOwnerPassword: false,
+          showOwnerConfirm: false,
+          emailVerified: false,
+          authLoading: false,
+          errorMessage: '',
+          stepLabels: ['Language', 'Agency / Business Information', 'System Owner Registration', 'Email Verification', 'Authenticator Setup'],
+          setupKey: '',
+          qrDataUrl: '',
+          otpCode: '',
+          showOtp: false,
+          otpVerified: false,
+          setupComplete: false,
+          emailVerificationCode: '',
+        };
+      },
+      mounted() {
+        this.step = 1;
+      },
+      watch: {
+        step(n) {
+          if (n === 5 && !this.setupKey && window.SystemSetupAuth && window.QRCode) {
+            this.setupKey = window.SystemSetupAuth.generateSecret();
+            const issuer = 'CVALTIS';
+            const account = this.owner.email || 'user';
+            const url = 'otpauth://totp/' + encodeURIComponent(issuer) + ':' + encodeURIComponent(account) + '?secret=' + this.setupKey + '&issuer=' + encodeURIComponent(issuer);
+            window.QRCode.toDataURL(url, { width: 140, margin: 1 }).then(u => { this.qrDataUrl = u; }).catch(() => {});
+          }
+        },
+      },
+      methods: {
+        nextStep() {
+          if (this.step === 1 && !this.selectedLanguage) {
+            this.errorMessage = 'Please select a language.';
+            return;
+          }
+          if (this.step === 3) {
+            const ok = this.submitOwnerRegistration();
+            if (!ok) return;
+          }
+          this.errorMessage = '';
+          if (this.step < this.totalSteps) this.step++;
+          else {
+            this.finishSetup();
+          }
+        },
+        prevStep() {
+          this.errorMessage = '';
+          if (this.step > 1) this.step--;
+        },
+        submitOwnerRegistration() {
+          const { owner } = this;
+          if (!owner.email || !owner.password) {
+            this.errorMessage = 'Email and password are required.';
+            return false;
+          }
+          if (owner.password.length < 6) {
+            this.errorMessage = 'Password must be at least 6 characters.';
+            return false;
+          }
+          if (owner.password !== owner.confirmPassword) {
+            this.errorMessage = 'Passwords do not match.';
+            return false;
+          }
+          this.errorMessage = '';
+          return true;
+        },
+        resendCode() {
+          this.errorMessage = '';
+        },
+        verifyEmail() {
+          const code = String(this.emailVerificationCode || '').trim();
+          if (!code || code.length < 6) {
+            this.errorMessage = 'Please enter the 6-digit code.';
+            return;
+          }
+          this.errorMessage = '';
+          this.emailVerified = true;
+        },
+        async checkOtp() {
+          const code = String(this.otpCode || '').trim();
+          if (code.length !== 6) {
+            this.errorMessage = 'Please enter a valid 6-digit OTP.';
+            return;
+          }
+          if (!this.setupKey || !window.SystemSetupAuth) {
+            this.errorMessage = 'Setup key not ready. Refresh and try again.';
+            return;
+          }
+          const valid = await window.SystemSetupAuth.verifyTOTP(this.setupKey, code);
+          if (!valid) {
+            this.errorMessage = 'Invalid OTP. Try again.';
+            return;
+          }
+          this.errorMessage = '';
+          this.otpVerified = true;
+        },
+        finishSetup() {
+          this.setupComplete = true;
+        },
+        buttonClick(e) {
+          e.currentTarget.style.transform = 'scale(0.95)';
+        },
+        buttonRelease(e) {
+          e.currentTarget.style.transform = '';
+        },
+      },
+    }).mount('#app');
+  </script>
+</body>
+</html>
