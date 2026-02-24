@@ -174,7 +174,12 @@
     </div>
   </section>
 </transition>
-<p class="error-handler" :class="{ visible: setup.errorMessage }">{{ setup.errorMessage || setup.t.errorHandler }}</p>
+<p
+  v-if="setup.errorMessage && setup.step !== 1"
+  class="error-handler visible"
+>
+  {{ setup.errorMessage }}
+</p>
 <div class="progress-row">
   <div class="progress-dots">
     <span v-for="n in setup.totalDots" :key="n" class="dot" :class="{ active: n <= setup.step }"></span>
