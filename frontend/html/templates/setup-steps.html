@@ -2,29 +2,82 @@
   <section v-if="setup.step === 1" key="step1" class="card-body">
     <h2 class="step-title">{{ setup.t.step1Title }}</h2>
     <div class="field-row">
-      <div class="select-wrap">
-        <select v-model="setup.selectedLanguage" class="input input-select" aria-label="Language" required>
+      <div class="select-wrap" :class="{ 'input-wrap--invalid': setup.step1Attempted && !setup.selectedLanguage }">
+        <select
+          v-model="setup.selectedLanguage"
+          class="input input-select"
+          :class="{ 'input--invalid': setup.step1Attempted && !setup.selectedLanguage }"
+          aria-label="Language"
+          required
+        >
           <option value="">{{ setup.t.selectLanguagePlaceholder }}</option>
           <option value="en">ENGLISH</option>
           <option value="tl">TAGALOG</option>
         </select>
         <span class="select-chevron">▾</span>
       </div>
+      <p class="field-error" v-if="setup.step1Attempted && !setup.selectedLanguage">{{ setup.t.fieldRequired }}</p>
     </div>
   </section>
 
   <section v-else-if="setup.step === 2" key="step2" class="card-body">
     <h2 class="section-label">{{ setup.t.step2Intro }}</h2>
     <hr class="section-rule">
-    <div class="field-row"><input type="text" class="input" :placeholder="setup.t.agencyName" v-model="setup.agency.name" required></div>
-    <div class="field-row"><input type="text" class="input" :placeholder="setup.t.agencyAddress" v-model="setup.agency.address" required></div>
-    <div class="field-row"><input type="email" class="input" :placeholder="setup.t.agencyEmail" v-model="setup.agency.email" required></div>
     <div class="field-row">
-      <label class="logo-upload-btn">
-        <input type="file" accept="image/*" class="input-file-hidden" @change="setup.onAgencyLogoChange" aria-label="Upload business logo" required>
-        <span class="input input-with-icon logo-upload-label">{{ setup.agency.logoDataUrl ? setup.t.changeLogo : setup.t.agencyLogo }}</span>
+      <input
+        type="text"
+        class="input"
+        :class="{ 'input--invalid': setup.step2Attempted && !String(setup.agency.name).trim() }"
+        :placeholder="setup.t.agencyName"
+        v-model="setup.agency.name"
+        required
+      >
+      <p class="field-error" v-if="setup.step2Attempted && !String(setup.agency.name).trim()">{{ setup.t.fieldRequired }}</p>
+    </div>
+    <div class="field-row">
+      <input
+        type="text"
+        class="input"
+        :class="{ 'input--invalid': setup.step2Attempted && !String(setup.agency.address).trim() }"
+        :placeholder="setup.t.agencyAddress"
+        v-model="setup.agency.address"
+        required
+      >
+      <p class="field-error" v-if="setup.step2Attempted && !String(setup.agency.address).trim()">{{ setup.t.fieldRequired }}</p>
+    </div>
+    <div class="field-row">
+      <input
+        type="email"
+        class="input"
+        :class="{ 'input--invalid': setup.step2Attempted && (!String(setup.agency.email).trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(setup.agency.email))) }"
+        :placeholder="setup.t.agencyEmail"
+        v-model="setup.agency.email"
+        required
+      >
+      <p class="field-error" v-if="setup.step2Attempted && !String(setup.agency.email).trim()">{{ setup.t.fieldRequired }}</p>
+      <p
+        class="field-error"
+        v-else-if="setup.step2Attempted && String(setup.agency.email).trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(setup.agency.email)"
+      >
+        {{ setup.t.errInvalidEmail }}
+      </p>
+    </div>
+    <div class="field-row">
+      <label class="logo-upload-btn" :class="{ 'input-wrap--invalid': setup.step2Attempted && !setup.agency.logoDataUrl }">
+        <input
+          type="file"
+          accept="image/*"
+          class="input-file-hidden"
+          @change="setup.onAgencyLogoChange"
+          aria-label="Upload business logo"
+          required
+        >
+        <span class="input input-with-icon logo-upload-label">
+          {{ setup.agency.logoDataUrl ? setup.t.changeLogo : setup.t.agencyLogo }}
+        </span>
         <span class="input-icon input-icon-upload" aria-hidden="true">↑</span>
       </label>
+      <p class="field-error" v-if="setup.step2Attempted && !setup.agency.logoDataUrl">{{ setup.t.fieldRequired }}</p>
     </div>
   </section>
 
@@ -32,63 +85,326 @@
     <p class="section-label">{{ setup.t.step3Intro }}</p>
     <p class="section-sublabel">{{ setup.t.step3Sublabel }}</p>
     <div class="owner-row">
-      <label class="owner-avatar-wrap">
-        <input type="file" accept="image/*" class="input-file-hidden" @change="setup.onOwnerProfileChange" aria-label="Upload profile photo" required>
+      <label class="owner-avatar-wrap" :class="{ 'input-wrap--invalid': setup.step3Attempted && !setup.owner.profileDataUrl }">
+        <input
+          type="file"
+          accept="image/*"
+          class="input-file-hidden"
+          @change="setup.onOwnerProfileChange"
+          aria-label="Upload profile photo"
+          required
+        >
         <div class="owner-avatar" :class="{ 'has-image': setup.owner.profileDataUrl }" aria-hidden="true">
           <img v-if="setup.owner.profileDataUrl" :src="setup.owner.profileDataUrl" alt="Profile" class="owner-avatar-img">
-          <svg v-else viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="avatar-svg"><circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 56c0-11 8.954-20 20-20s20 9 20 20" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          <svg
+            v-else
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="avatar-svg"
+          >
+            <circle
+              cx="32"
+              cy="24"
+              r="12"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12 56c0-11 8.954-20 20-20s20 9 20 20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+          </svg>
         </div>
-        <span class="owner-avatar-upload-hint">{{ setup.owner.profileDataUrl ? setup.t.changePhoto : setup.t.uploadProfile }}</span>
+        <span class="owner-avatar-upload-hint">
+          {{ setup.owner.profileDataUrl ? setup.t.changePhoto : setup.t.uploadProfile }}
+        </span>
       </label>
       <div class="owner-fields">
         <div class="field-row field-with-icon">
           <span class="field-icon field-icon-person">👤</span>
-          <input type="text" class="input" :placeholder="setup.t.lastName" v-model="setup.owner.lastName" required>
+          <input
+            type="text"
+            class="input"
+            :class="{ 'input--invalid': setup.step3Attempted && !String(setup.owner.lastName).trim() }"
+            :placeholder="setup.t.lastName"
+            v-model="setup.owner.lastName"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.lastName).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
         </div>
         <div class="field-row field-with-icon">
           <span class="field-icon field-icon-person">👤</span>
-          <input type="text" class="input" :placeholder="setup.t.firstName" v-model="setup.owner.firstName" required>
+          <input
+            type="text"
+            class="input"
+            :class="{ 'input--invalid': setup.step3Attempted && !String(setup.owner.firstName).trim() }"
+            :placeholder="setup.t.firstName"
+            v-model="setup.owner.firstName"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.firstName).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
         </div>
         <div class="field-row field-with-icon">
           <span class="field-icon field-icon-person">👤</span>
-          <input type="text" class="input" :placeholder="setup.t.middleName" v-model="setup.owner.middleName" required>
+          <input
+            type="text"
+            class="input"
+            :class="{ 'input--invalid': setup.step3Attempted && !String(setup.owner.middleName).trim() }"
+            :placeholder="setup.t.middleName"
+            v-model="setup.owner.middleName"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.middleName).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
         </div>
         <div class="field-row field-with-icon">
           <span class="field-icon field-icon-email">✉</span>
-          <input type="email" class="input" :placeholder="setup.t.email" v-model="setup.owner.email" required>
+          <input
+            type="email"
+            class="input"
+            :class="{
+              'input--invalid':
+                setup.step3Attempted &&
+                (!String(setup.owner.email).trim() ||
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(setup.owner.email)))
+            }"
+            :placeholder="setup.t.email"
+            v-model="setup.owner.email"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.email).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
+          <p
+            class="field-error"
+            v-else-if="
+              setup.step3Attempted &&
+              String(setup.owner.email).trim() &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(setup.owner.email)
+            "
+          >
+            {{ setup.t.errInvalidEmail }}
+          </p>
         </div>
         <div class="field-row field-with-icon">
+          <span class="field-icon field-icon-phone">📞</span>
+          <input
+            type="tel"
+            class="input"
+            :class="{
+              'input--invalid':
+                setup.step3Attempted &&
+                (!String(setup.owner.contactNumber).trim() ||
+                  !/^\d{11}$/.test(String(setup.owner.contactNumber)))
+            }"
+            :placeholder="setup.t.contactNumber"
+            v-model="setup.owner.contactNumber"
+            inputmode="numeric"
+            pattern="\d*"
+            maxlength="11"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.contactNumber).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
+          <p
+            class="field-error"
+            v-else-if="
+              setup.step3Attempted &&
+              String(setup.owner.contactNumber).trim() &&
+              !/^\d{11}$/.test(setup.owner.contactNumber)
+            "
+          >
+            {{ setup.t.errContactNumberInvalid }}
+          </p>
+        </div>
+        <div class="field-row field-with-icon field-row--full">
           <span class="field-icon field-icon-calendar">📅</span>
-          <input type="text" class="input" :placeholder="setup.t.dateOfBirth" v-model="setup.owner.dob" required>
+          <input
+            type="date"
+            class="input"
+            :class="{ 'input--invalid': setup.step3Attempted && !String(setup.owner.dob).trim() }"
+            :placeholder="setup.t.dateOfBirth"
+            v-model="setup.owner.dob"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.dob).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
         </div>
-        <div class="field-row field-with-icon">
+        <div class="field-row field-with-icon field-row--full">
           <span class="field-icon field-icon-pin">📍</span>
-          <input type="text" class="input" :placeholder="setup.t.homeAddress" v-model="setup.owner.address" required>
+          <input
+            type="text"
+            class="input"
+            :class="{ 'input--invalid': setup.step3Attempted && !String(setup.owner.address).trim() }"
+            :placeholder="setup.t.homeAddress"
+            v-model="setup.owner.address"
+            required
+          >
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.address).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
         </div>
-        <div class="field-row field-with-icon">
-          <input :type="setup.showOwnerPassword ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.password" v-model="setup.owner.password" minlength="8" maxlength="32" required>
-          <button type="button" class="input-icon-btn" @click="setup.showOwnerPassword = !setup.showOwnerPassword" :aria-label="setup.showOwnerPassword ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ setup.showOwnerPassword ? '🙈' : '👁' }}</span></button>
+        <div class="field-row field-with-icon field-row--full">
+          <input
+            :type="setup.showOwnerPassword ? 'text' : 'password'"
+            class="input input-with-icon"
+            :class="{
+              'input--invalid':
+                setup.step3Attempted &&
+                (!setup.owner.password ||
+                  setup.owner.password.length < 8 ||
+                  !/^[a-zA-Z0-9]+$/.test(setup.owner.password))
+            }"
+            :placeholder="setup.t.password"
+            v-model="setup.owner.password"
+            minlength="8"
+            maxlength="32"
+            required
+          >
+          <button
+            type="button"
+            class="input-icon-btn"
+            @click="setup.showOwnerPassword = !setup.showOwnerPassword"
+            :aria-label="setup.showOwnerPassword ? 'Hide password' : 'Show password'"
+          >
+            <span class="input-icon input-icon-eye">
+              {{ setup.showOwnerPassword ? '🙈' : '👁' }}
+            </span>
+          </button>
+          <p class="field-error" v-if="setup.step3Attempted && !setup.owner.password">
+            {{ setup.t.fieldRequired }}
+          </p>
+          <p
+            class="field-error"
+            v-else-if="setup.step3Attempted && setup.owner.password && setup.owner.password.length < 8"
+          >
+            {{ setup.t.errPasswordLength }}
+          </p>
+          <p
+            class="field-error"
+            v-else-if="
+              setup.step3Attempted &&
+              setup.owner.password &&
+              setup.owner.password.length >= 8 &&
+              !/^[a-zA-Z0-9]+$/.test(setup.owner.password)
+            "
+          >
+            {{ setup.t.errPasswordAlphanumeric }}
+          </p>
         </div>
-        <div class="field-row field-with-icon">
-          <input :type="setup.showOwnerConfirm ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.confirmPassword" v-model="setup.owner.confirmPassword" minlength="8" maxlength="32" required>
-          <button type="button" class="input-icon-btn" @click="setup.showOwnerConfirm = !setup.showOwnerConfirm" :aria-label="setup.showOwnerConfirm ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ setup.showOwnerConfirm ? '🙈' : '👁' }}</span></button>
+        <div class="field-row field-with-icon field-row--full">
+          <input
+            :type="setup.showOwnerConfirm ? 'text' : 'password'"
+            class="input input-with-icon"
+            :class="{
+              'input--invalid':
+                setup.step3Attempted &&
+                (!String(setup.owner.confirmPassword).trim() ||
+                  setup.owner.password !== setup.owner.confirmPassword)
+            }"
+            :placeholder="setup.t.confirmPassword"
+            v-model="setup.owner.confirmPassword"
+            minlength="8"
+            maxlength="32"
+            required
+          >
+          <button
+            type="button"
+            class="input-icon-btn"
+            @click="setup.showOwnerConfirm = !setup.showOwnerConfirm"
+            :aria-label="setup.showOwnerConfirm ? 'Hide password' : 'Show password'"
+          >
+            <span class="input-icon input-icon-eye">
+              {{ setup.showOwnerConfirm ? '🙈' : '👁' }}
+            </span>
+          </button>
+          <p class="field-error" v-if="setup.step3Attempted && !String(setup.owner.confirmPassword).trim()">
+            {{ setup.t.fieldRequired }}
+          </p>
+          <p
+            class="field-error"
+            v-else-if="
+              setup.step3Attempted &&
+              setup.owner.password !== setup.owner.confirmPassword
+            "
+          >
+            {{ setup.t.errPasswordMatch }}
+          </p>
         </div>
       </div>
     </div>
+    <p class="field-error field-error--profile" v-if="setup.step3Attempted && !setup.owner.profileDataUrl">
+      {{ setup.t.fieldRequired }}
+    </p>
   </section>
 
   <section v-else-if="setup.step === 4" key="step4" class="card-body">
     <p class="section-label">{{ setup.t.step4Intro }}</p>
     <p class="section-sublabel">{{ setup.t.step3Sublabel }}</p>
-    <p class="email-verify-instruction" v-if="!setup.emailVerified">{{ setup.t.emailVerifyInstruction }} <strong>{{ setup.owner.email || setup.t.yourEmail }}</strong>.</p>
-    <p class="email-verify-instruction email-verified-msg" v-else>{{ setup.t.emailVerifiedMsg }}</p>
-    <div class="field-row field-with-icon field-icon-right-only" v-if="!setup.emailVerified">
-      <input type="text" class="input input-with-icon" :placeholder="setup.t.emailVerifyCode" v-model="setup.emailVerificationCode" maxlength="6" inputmode="numeric" pattern="[0-9]*" required>
+    <p
+      class="email-verify-instruction"
+      v-if="!setup.emailVerified"
+    >
+      {{ setup.t.emailVerifyInstruction }}
+      <strong>{{ setup.owner.email || setup.t.yourEmail }}</strong>.
+    </p>
+    <p
+      class="email-verify-instruction email-verified-msg"
+      v-else
+    >
+      {{ setup.t.emailVerifiedMsg }}
+    </p>
+    <div
+      class="field-row field-with-icon field-icon-right-only"
+      v-if="!setup.emailVerified"
+    >
+      <input
+        type="text"
+        class="input input-with-icon"
+        :class="{ 'input--invalid': setup.step4Attempted && !String(setup.emailVerificationCode).trim() }"
+        :placeholder="setup.t.emailVerifyCode"
+        v-model="setup.emailVerificationCode"
+        maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        required
+      >
       <span class="field-icon field-icon-key" aria-hidden="true">🔑</span>
     </div>
+    <p
+      class="field-error"
+      v-if="!setup.emailVerified && setup.step4Attempted && !String(setup.emailVerificationCode).trim()"
+    >
+      {{ setup.t.fieldRequired }}
+    </p>
     <div class="email-verify-buttons" v-if="!setup.emailVerified">
-      <button type="button" class="btn btn-resend" :disabled="setup.authLoading" @click="setup.resendCode">{{ setup.t.resendCode }}</button>
-      <button type="button" class="btn btn-verify" :disabled="setup.authLoading" @click="setup.verifyEmail">{{ setup.t.verify }}</button>
+      <button
+        type="button"
+        class="btn btn-resend"
+        :disabled="setup.authLoading"
+        @click="setup.resendCode"
+      >
+        {{ setup.t.resendCode }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-verify"
+        :disabled="setup.authLoading"
+        @click="setup.verifyEmail"
+      >
+        {{ setup.t.verify }}
+      </button>
     </div>
   </section>
 
@@ -96,22 +412,80 @@
     <p class="section-label">{{ setup.t.step5Intro }}</p>
     <p class="section-sublabel">{{ setup.t.step3Sublabel }}</p>
     <p class="authenticator-instruction">{{ setup.t.authenticatorInstruction }}</p>
+    <p class="authenticator-download">
+      <span>{{ setup.t.authenticatorDownload }}</span>
+      <a
+        href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="auth-link"
+      >
+        Google Play
+      </a>
+      <span class="auth-link-sep">|</span>
+      <a
+        href="https://apps.apple.com/app/google-authenticator/id388497605"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="auth-link"
+      >
+        App Store
+      </a>
+    </p>
     <div class="authenticator-row">
       <div class="qr-block">
         <div class="qr-placeholder" aria-hidden="true">
-          <img v-if="setup.qrDataUrl" :src="setup.qrDataUrl" alt="QR code for authenticator" class="qr-img">
+          <img
+            v-if="setup.qrDataUrl"
+            :src="setup.qrDataUrl"
+            alt="QR code for authenticator"
+            class="qr-img"
+          >
           <span v-else class="qr-inner">QR Code</span>
         </div>
-        <p class="setup-key-label">{{ setup.t.setupKey }}: <code class="setup-key">{{ setup.setupKey }}</code></p>
+        <p class="setup-key-label">
+          {{ setup.t.setupKey }}:
+          <code class="setup-key">{{ setup.setupKey }}</code>
+        </p>
       </div>
       <div class="otp-block">
         <div class="field-row">
-          <input :type="setup.showOtp ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.enterOtp" v-model="setup.otpCode" maxlength="6" required>
-          <button type="button" class="input-icon-btn" @click="setup.showOtp = !setup.showOtp" :aria-label="setup.showOtp ? 'Hide OTP' : 'Show OTP'">
-            <span class="input-icon input-icon-eye">{{ setup.showOtp ? '🙈' : '👁' }}</span>
+          <input
+            :type="setup.showOtp ? 'text' : 'password'"
+            class="input input-with-icon"
+            :class="{ 'input--invalid': setup.step5Attempted && (!String(setup.otpCode).trim() || String(setup.otpCode).trim().length !== 6) }"
+            :placeholder="setup.t.enterOtp"
+            v-model="setup.otpCode"
+            maxlength="6"
+            required
+          >
+          <button
+            type="button"
+            class="input-icon-btn"
+            @click="setup.showOtp = !setup.showOtp"
+            :aria-label="setup.showOtp ? 'Hide OTP' : 'Show OTP'"
+          >
+            <span class="input-icon input-icon-eye">
+              {{ setup.showOtp ? '🙈' : '👁' }}
+            </span>
           </button>
         </div>
-        <button type="button" class="btn btn-check-otp" @click="setup.checkOtp">{{ setup.t.checkOtp }}</button>
+        <p
+          class="field-error"
+          v-if="
+            setup.step5Attempted &&
+            (!String(setup.otpCode).trim() || String(setup.otpCode).trim().length !== 6)
+          "
+        >
+          {{ setup.t.errValidOtp }}
+        </p>
+        <button
+          type="button"
+          class="btn btn-check-otp"
+          @click="setup.checkOtp"
+        >
+          {{ setup.t.checkOtp }}
+        </button>
       </div>
     </div>
   </section>

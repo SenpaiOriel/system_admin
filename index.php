@@ -15,9 +15,9 @@ if (!$db_handler->checkDBConnection()) {
 // Loading of Frontend Files
 $utility->defineFile('frontend/html/core/head.html');
 if ($utility->checkSiteInitialization()) {
-    $utility->defineFile('frontend/html/parts/header.html');
+    $utility->defineFile('frontend/html/core/header.html');
     $utility->defineFile('frontend/html/main.html');
-    $utility->defineFile('frontend/html/parts/footer.html');
+    $utility->defineFile('frontend/html/core/footer.html');
 } else {
     $utility->defineFile('frontend/html/pages/setup.html');
 }

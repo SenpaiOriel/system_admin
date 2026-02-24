@@ -1,12 +1,9 @@
-/* System Admin Dashboard – same design as registration (system-setup) */
-@import url('system-setup.css');
-
+/* System Admin Dashboard – extends home/setup styles */
 :root {
-  --sidebar-width: 280px;
+  --sidebar-width: 260px;
   --header-height: 56px;
 }
 
-/* Dashboard shell – override setup-wrap center layout */
 .setup-wrap.admin-wrap {
   align-items: stretch;
   justify-content: flex-start;
@@ -21,7 +18,6 @@
 .admin-wrap .circuit-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 .admin-wrap .circuit-svg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
 
-/* Sidebar – uses registration card colors */
 .admin-sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
@@ -91,30 +87,11 @@
 .setup-wrap.theme-light .admin-user-role { color: var(--text-muted-light); }
 
 .admin-nav {
+  flex: 1;
   padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-}
-.admin-sidebar-footer {
-  margin-top: auto;
-  padding: 0.75rem 0 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.setup-wrap.theme-light .admin-sidebar-footer {
-  border-top-color: rgba(0, 0, 0, 0.08);
-}
-.admin-nav-item-logout {
-  color: var(--text-muted-dark);
-}
-.setup-wrap.theme-light .admin-nav-item-logout { color: var(--text-muted-light); }
-.admin-nav-item-logout:hover {
-  background: rgba(255, 100, 100, 0.12);
-  color: #f66;
-}
-.setup-wrap.theme-light .admin-nav-item-logout:hover {
-  background: rgba(200, 60, 60, 0.12);
-  color: #c33;
 }
 .admin-nav-item {
   display: flex;
@@ -154,7 +131,6 @@
   border-color: var(--card-border-light);
 }
 
-/* Main content */
 .admin-main {
   flex: 1;
   position: relative;
@@ -162,7 +138,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 1.25rem 2rem 1.75rem;
+  padding: 1rem 1.5rem 1.5rem;
 }
 
 .admin-breadcrumb {
@@ -180,7 +156,7 @@
   border: 1px solid var(--card-border-dark);
   border-radius: var(--radius-lg);
   box-shadow: 0 0 40px rgba(0, 212, 255, 0.06);
-  padding: 1.5rem 1.75rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -191,12 +167,7 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
-.admin-page-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
+.admin-page-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
 .admin-page-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -242,18 +213,9 @@
   color: var(--btn-next-light);
 }
 .admin-summary-icon svg { width: 22px; height: 22px; }
-.admin-summary-label {
-  font-size: 0.8rem;
-  color: var(--text-muted-dark);
-  margin: 0;
-}
+.admin-summary-label { font-size: 0.8rem; color: var(--text-muted-dark); margin: 0; }
 .setup-wrap.theme-light .admin-summary-label { color: var(--text-muted-light); }
-.admin-summary-value {
-  font-size: 1.35rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--text-dark);
-}
+.admin-summary-value { font-size: 1.35rem; font-weight: 700; margin: 0; color: var(--text-dark); }
 .setup-wrap.theme-light .admin-summary-value { color: var(--text-light); }
 
 .admin-search-wrap {
@@ -297,7 +259,6 @@
 }
 .setup-wrap.theme-light .admin-search-icon { color: var(--text-muted-light); }
 
-/* Table */
 .admin-table-wrap {
   flex: 1;
   overflow: auto;
@@ -333,14 +294,9 @@
   border-bottom-color: #f3f4f6;
   color: var(--text-light);
 }
-.admin-table tbody tr:hover {
-  background: rgba(0, 212, 255, 0.04);
-}
-.setup-wrap.theme-light .admin-table tbody tr:hover {
-  background: rgba(0, 168, 204, 0.05);
-}
+.admin-table tbody tr:hover { background: rgba(0, 212, 255, 0.04); }
+.setup-wrap.theme-light .admin-table tbody tr:hover { background: rgba(0, 168, 204, 0.05); }
 
-/* Toggle switch (registration-style accent) */
 .admin-toggle {
   position: relative;
   width: 44px;
@@ -382,7 +338,6 @@
   background: var(--btn-next-light);
 }
 
-/* Theme toggle position in dashboard */
 .admin-wrap .theme-toggle-wrap {
   position: absolute;
   top: 0.6rem;
