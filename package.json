@@ -4,12 +4,13 @@
   "description": "CVALTIS System Setup & Admin",
   "scripts": {
     "build": "grunt",
-    "watch": "grunt watch"
+    "watch": "grunt watch",
+    "phpStart": "php -S localhost:8000"
   },
   "devDependencies": {
-    "grunt": "^1.6.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-exec": "^3.0.0",
+    "grunt": "^0.3.17",
+    "grunt-contrib-watch": "^0.4.4",
+    "grunt-exec": "^0.3.0",
     "sass": "^1.69.0"
   }
 }
