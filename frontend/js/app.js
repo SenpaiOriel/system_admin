@@ -1,16 +1,15 @@
 /**
- * CVALTIS – Setup app entry. Requires Vue, CVALTIS_TRANSLATIONS, CVALTIS_REGISTRATION_FORM_TEMPLATE.
+ * CVALTIS – Setup app entry. Requires Vue, CVALTIS_TRANSLATIONS. Waits for CVALTIS_REGISTRATION_FORM_TEMPLATE (loaded by registration-form-template.js).
  */
 (function() {
   'use strict';
 
+  var EVENT_TEMPLATE_READY = 'cvaltis-registration-template-ready';
+
   if (typeof Vue === 'undefined' || !document.getElementById('app')) return;
   var translations = typeof window.CVALTIS_TRANSLATIONS !== 'undefined' ? window.CVALTIS_TRANSLATIONS : { en: {}, tl: {} };
-  var registrationFormTemplate = typeof window.CVALTIS_REGISTRATION_FORM_TEMPLATE !== 'undefined'
-    ? window.CVALTIS_REGISTRATION_FORM_TEMPLATE
-    : '';
 
-  function createSetupApp() {
+  function createSetupApp(registrationFormTemplate) {
     return Vue.createApp({
       data: function() {
         var saved = typeof localStorage !== 'undefined' && localStorage.getItem('cvaltis-theme');
@@ -22,7 +21,7 @@
           totalDots: 10,
           selectedLanguage: '',
           agency: { name: '', address: '', email: '', logoDataUrl: '' },
-          owner: { lastName: '', firstName: '', middleName: '', email: '', dob: '', address: '', password: '', confirmPassword: '', profileDataUrl: '' },
+          owner: { lastName: '', firstName: '', middleName: '', email: '', contactNumber: '', dob: '', address: '', password: '', confirmPassword: '', profileDataUrl: '' },
           showOwnerPassword: false,
           showOwnerConfirm: false,
           emailVerified: false,
@@ -40,7 +39,12 @@
           showAdmin: false,
           currentSection: 'plugins',
           pluginSearch: '',
-          plugins: []
+          plugins: [],
+          step1Attempted: false,
+          step2Attempted: false,
+          step3Attempted: false,
+          step4Attempted: false,
+          step5Attempted: false
         };
       },
       provide: function() { return { setup: this }; },
@@ -75,11 +79,11 @@
       },
       methods: {
         nextStep: function() {
-          if (this.step === 1 && !this.selectedLanguage) { this.errorMessage = this.t.errSelectLanguage; return; }
-          if (this.step === 2 && !this.validateStep2()) return;
-          if (this.step === 3 && !this.submitOwnerRegistration()) return;
-          if (this.step === 4 && !this.emailVerified) { this.errorMessage = this.t.errVerifyEmailFirst; return; }
-          if (this.step === 5 && !this.otpVerified) { this.errorMessage = this.t.errVerifyOtpFirst; return; }
+          if (this.step === 1 && !this.selectedLanguage) { this.step1Attempted = true; this.errorMessage = this.t.errSelectLanguage; return; }
+          if (this.step === 2 && !this.validateStep2()) { this.step2Attempted = true; return; }
+          if (this.step === 3 && !this.submitOwnerRegistration()) { this.step3Attempted = true; return; }
+          if (this.step === 4 && !this.emailVerified) { this.step4Attempted = true; this.errorMessage = this.t.errVerifyEmailFirst; return; }
+          if (this.step === 5 && !this.otpVerified) { this.step5Attempted = true; this.errorMessage = this.t.errVerifyOtpFirst; return; }
           this.errorMessage = '';
           if (this.step < this.totalSteps) this.step++;
           else this.finishSetup();
@@ -99,9 +103,12 @@
         submitOwnerRegistration: function() {
           var owner = this.owner;
           var email = String(owner.email || '').trim();
+          var contact = String(owner.contactNumber || '').trim();
           if (!String(owner.lastName || '').trim() || !String(owner.firstName || '').trim() || !String(owner.middleName || '').trim()) { this.errorMessage = this.t.errOwnerRequired; return false; }
           if (!email || !owner.password) { this.errorMessage = this.t.errEmailPassword; return false; }
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { this.errorMessage = this.t.errInvalidEmail; return false; }
+          if (!contact) { this.errorMessage = this.t.errOwnerRequired; return false; }
+          if (!/^\d{11}$/.test(contact)) { this.errorMessage = this.t.errContactNumberInvalid; return false; }
           if (!String(owner.dob || '').trim() || !String(owner.address || '').trim()) { this.errorMessage = this.t.errOwnerRequired; return false; }
           if (owner.password.length < 8) { this.errorMessage = this.t.errPasswordLength; return false; }
           if (!/^[a-zA-Z0-9]+$/.test(owner.password)) { this.errorMessage = this.t.errPasswordAlphanumeric; return false; }
@@ -113,17 +120,17 @@
         resendCode: function() { this.errorMessage = ''; },
         verifyEmail: function() {
           var code = String(this.emailVerificationCode || '').trim();
-          if (!code || code.length < 6) { this.errorMessage = this.t.errEnterCode; return; }
+          if (!code || code.length < 6) { this.step4Attempted = true; this.errorMessage = this.t.errEnterCode; return; }
           this.errorMessage = '';
           this.emailVerified = true;
         },
         checkOtp: function() {
           var self = this;
           var code = String(this.otpCode || '').trim();
-          if (code.length !== 6) { this.errorMessage = this.t.errValidOtp; return; }
+          if (code.length !== 6) { this.step5Attempted = true; this.errorMessage = this.t.errValidOtp; return; }
           if (!this.setupKey || !window.SystemSetupAuth) { this.errorMessage = this.t.errSetupKey; return; }
           window.SystemSetupAuth.verifyTOTP(this.setupKey, code).then(function(valid) {
-            if (!valid) self.errorMessage = self.t.errInvalidOtp;
+            if (!valid) { self.step5Attempted = true; self.errorMessage = self.t.errInvalidOtp; }
             else { self.errorMessage = ''; self.otpVerified = true; }
           });
         },
@@ -159,7 +166,21 @@
     });
   }
 
-  var app = createSetupApp();
-  app.component('RegistrationForm', { template: registrationFormTemplate, inject: ['setup'] });
-  app.mount('#app');
+  function mountApp() {
+    var template = typeof window.CVALTIS_REGISTRATION_FORM_TEMPLATE !== 'undefined'
+      ? window.CVALTIS_REGISTRATION_FORM_TEMPLATE
+      : '';
+    var app = createSetupApp(template);
+    app.component('RegistrationForm', { template: template, inject: ['setup'] });
+    app.mount('#app');
+  }
+
+  if (typeof window.CVALTIS_REGISTRATION_FORM_TEMPLATE !== 'undefined' && window.CVALTIS_REGISTRATION_FORM_TEMPLATE !== '') {
+    mountApp();
+  } else {
+    document.addEventListener(EVENT_TEMPLATE_READY, function onReady() {
+      document.removeEventListener(EVENT_TEMPLATE_READY, onReady);
+      mountApp();
+    });
+  }
 })();

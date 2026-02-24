@@ -28,6 +28,7 @@
     middleName: 'Middle Name',
     email: 'Email',
     dateOfBirth: 'Date of Birth',
+    contactNumber: 'Contact Number',
     homeAddress: 'Home Address',
     password: 'Password',
     confirmPassword: 'Confirm Password',
@@ -38,9 +39,10 @@
     resendCode: 'RESEND CODE',
     verify: 'VERIFY',
     step5Intro: "This collects the owner / head's information.",
-    authenticatorInstruction: 'Install an Authenticator app and use it to scan the QR code or enter the key to get a login OTP.',
+    authenticatorInstruction: 'Use Google Authenticator (or another TOTP app): scan the QR code below with your phone, or enter the Setup Key manually. Then enter the 6-digit code from the app here.',
+    authenticatorDownload: 'Get Google Authenticator:',
     setupKey: 'Setup Key',
-    enterOtp: 'Enter OTP',
+    enterOtp: 'Enter 6-digit code from Google Authenticator',
     checkOtp: 'CHECK OTP',
     errorHandler: 'Error Handler message',
     previous: 'PREVIOUS',
@@ -63,7 +65,9 @@
     errOwnerRequired: 'Please fill in all owner fields.',
     errVerifyEmailFirst: 'Please verify your email before continuing.',
     errVerifyOtpFirst: 'Please verify OTP before finishing.',
-    yourEmail: 'your email'
+    yourEmail: 'your email',
+    fieldRequired: 'This field is required. Please fill it up.',
+    errContactNumberInvalid: 'Contact number must be 11 digits (numbers only).'
   };
 
   var tl = {
@@ -89,6 +93,7 @@
     middleName: 'Gitnang Pangalan',
     email: 'Email',
     dateOfBirth: 'Petsa ng Kapanganakan',
+    contactNumber: 'Contact Number',
     homeAddress: 'Tirahan',
     password: 'Password',
     confirmPassword: 'Kumpirmahin ang Password',
@@ -99,9 +104,10 @@
     resendCode: 'IPADALA MULI ANG CODE',
     verify: 'IVERIFY',
     step5Intro: 'Kinokolekta nito ang impormasyon ng may-ari / pinuno.',
-    authenticatorInstruction: 'Mag-install ng Authenticator app at gamitin ito para i-scan ang QR code o ilagay ang key para makakuha ng login OTP.',
+    authenticatorInstruction: 'Gamitin ang Google Authenticator (o ibang TOTP app): i-scan ang QR code sa phone, o ilagay nang mano-mano ang Setup Key. Pagkatapos ilagay dito ang 6-digit code mula sa app.',
+    authenticatorDownload: 'I-download ang Google Authenticator:',
     setupKey: 'Setup Key',
-    enterOtp: 'Ilagay ang OTP',
+    enterOtp: 'Ilagay ang 6-digit code mula sa Google Authenticator',
     checkOtp: 'SURIIN ANG OTP',
     errorHandler: 'Mensahe ng Error Handler',
     previous: 'NAUNA',
@@ -124,7 +130,9 @@
     errOwnerRequired: 'Punan ang lahat ng patlang ng may-ari.',
     errVerifyEmailFirst: 'I-verify muna ang iyong email bago magpatuloy.',
     errVerifyOtpFirst: 'I-verify muna ang OTP bago tapos.',
-    yourEmail: 'iyong email'
+    yourEmail: 'iyong email',
+    fieldRequired: 'Kailangang punan ang patlang na ito.',
+    errContactNumberInvalid: 'Ang contact number ay dapat 11 digits (mga numero lamang).'
   };
 
   global.CVALTIS_TRANSLATIONS = { en: en, tl: tl };

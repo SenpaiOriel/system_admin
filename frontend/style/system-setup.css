@@ -238,6 +238,36 @@ html.theme-light .setup-wrap .btn-option {
   color: var(--color-error);
 }
 
+/* Required field validation: red border and message when not filled */
+.setup-wrap .input--invalid,
+.setup-wrap .input.input--invalid {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 1px var(--color-error);
+}
+
+.setup-wrap .input-wrap--invalid .input,
+.setup-wrap .input-wrap--invalid .logo-upload-label,
+.setup-wrap .input-wrap--invalid.select-wrap .input-select,
+.setup-wrap .owner-avatar-wrap.input-wrap--invalid .owner-avatar {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 1px var(--color-error);
+}
+
+.setup-wrap .owner-avatar-wrap.input-wrap--invalid .owner-avatar {
+  border: 2px solid var(--color-error);
+}
+
+.setup-wrap .field-error {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0;
+  font-weight: 500;
+}
+
+.setup-wrap .field-error--profile {
+  margin-top: 0.5rem;
+}
+
 .setup-wrap .progress-label {
   color: var(--color-text);
 }
@@ -690,19 +720,24 @@ html.theme-light .theme-toggle-outside .toggle-labels {
   margin-bottom: 0.6rem;
 }
 
-.owner-fields .field-row:nth-child(7),
-.owner-fields .field-row:nth-child(8) {
-  grid-column: 1/-1;
+.owner-fields .field-row--full {
+  grid-column: 1 / -1;
 }
 
 .field-with-icon {
   position: relative;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .field-with-icon .input {
+  flex: 1 1 100%;
   padding-left: 2.25rem;
+}
+
+.field-with-icon .field-error {
+  flex: 0 0 100%;
 }
 
 .field-icon {
@@ -722,6 +757,23 @@ html.theme-light .theme-toggle-outside .toggle-labels {
 
 .field-with-icon.field-icon-right-only .input {
   padding-left: 1rem;
+}
+
+@media (max-width: 520px) {
+  .owner-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .owner-avatar-wrap {
+    align-self: center;
+  }
+
+  .owner-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-width: 0;
+  }
 }
 
 /* Step 4: Email verification */
@@ -814,6 +866,27 @@ html.theme-light .theme-toggle-outside .toggle-labels {
   margin: 0 0 0.7rem;
   font-size: 0.8rem;
   opacity: 0.9;
+}
+
+.authenticator-download {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.authenticator-download .auth-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.authenticator-download .auth-link:hover {
+  text-decoration: underline;
+}
+
+.authenticator-download .auth-link-sep {
+  margin: 0 0.35rem;
+  opacity: 0.6;
 }
 
 .authenticator-row {
