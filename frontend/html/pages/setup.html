@@ -30,13 +30,6 @@
       </svg>
     </div>
 
-    <div v-if="!showAdmin" class="theme-toggle-wrap theme-toggle-outside" role="switch" :aria-checked="isDark" aria-label="Light or dark mode">
-      <button type="button" class="theme-toggle" @click="isDark = !isDark" :class="{ dark: isDark, light: !isDark }">
-        <span class="toggle-track"><span class="toggle-pill"></span></span>
-        <span class="toggle-labels"><span class="toggle-dark">Dark</span><span class="toggle-light">Light</span></span>
-      </button>
-    </div>
-
     <main v-if="!showAdmin" class="setup-card">
       <template v-if="!setupComplete">
         <registration-form />
@@ -52,7 +45,6 @@
       <div class="theme-toggle-wrap" role="switch" :aria-checked="isDark" aria-label="Light or dark mode">
         <button type="button" class="theme-toggle" @click="isDark = !isDark" :class="{ dark: isDark, light: !isDark }">
           <span class="toggle-track"><span class="toggle-pill"></span></span>
-          <span class="toggle-labels"><span class="toggle-dark">Dark</span><span class="toggle-light">Light</span></span>
         </button>
       </div>
       <aside class="admin-sidebar">

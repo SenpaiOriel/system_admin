@@ -22,3 +22,4 @@ if ($utility->checkSiteInitialization()) {
     $utility->defineFile('frontend/html/pages/setup.html');
 }
 $utility->defineFile('frontend/html/core/foot.html');
+ 

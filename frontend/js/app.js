@@ -79,7 +79,7 @@
       },
       methods: {
         nextStep: function() {
-          if (this.step === 1 && !this.selectedLanguage) { this.step1Attempted = true; this.errorMessage = this.t.errSelectLanguage; return; }
+          if (this.step === 1 && !this.selectedLanguage) { this.step1Attempted = true; return; }
           if (this.step === 2 && !this.validateStep2()) { this.step2Attempted = true; return; }
           if (this.step === 3 && !this.submitOwnerRegistration()) { this.step3Attempted = true; return; }
           if (this.step === 4 && !this.emailVerified) { this.step4Attempted = true; this.errorMessage = this.t.errVerifyEmailFirst; return; }
