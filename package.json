@@ -4,7 +4,8 @@
   "description": "CVALTIS System Setup & Admin",
   "scripts": {
     "build": "grunt",
-    "watch": "grunt watch"
+    "watch": "grunt watch",
+    "phpStart": "php -S localhost:8000"
   },
   "devDependencies": {
     "grunt": "^1.6.0",

@@ -92,23 +92,23 @@
           <input type="text" class="input" :placeholder="setup.t.middleName" v-model="setup.owner.middleName">
         </div>
         <div class="field-row field-with-icon">
-          <span class="field-icon field-icon-calendar">📅</span>
-          <input type="text" class="input" :placeholder="setup.t.dateOfBirth" v-model="setup.owner.dob" autocomplete="off">
+          <span class="field-icon field-icon-email">✉</span>
+          <input type="email" class="input" :placeholder="setup.t.email" v-model="setup.owner.email">
         </div>
         <div class="field-row field-with-icon">
-          <span class="field-icon field-icon-email">✉</span>
-          <input type="email" class="input" name="email" :placeholder="setup.t.email" v-model="setup.owner.email" autocomplete="username">
+          <span class="field-icon field-icon-calendar">📅</span>
+          <input type="text" class="input" :placeholder="setup.t.dateOfBirth" v-model="setup.owner.dob">
         </div>
         <div class="field-row field-with-icon">
           <span class="field-icon field-icon-pin">📍</span>
-          <input type="text" class="input" name="home-address" :placeholder="setup.t.homeAddress" v-model="setup.owner.address" aria-label="Home address" autocomplete="street-address" :readonly="!setup.addressFieldFocused" @focus="setup.addressFieldFocused = true">
+          <input type="text" class="input" :placeholder="setup.t.homeAddress" v-model="setup.owner.address">
         </div>
         <div class="field-row field-with-icon">
-          <input :type="setup.showOwnerPassword ? 'text' : 'password'" class="input input-with-icon" name="new-password" :placeholder="setup.t.password" v-model="setup.owner.password" autocomplete="new-password">
+          <input :type="setup.showOwnerPassword ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.password" v-model="setup.owner.password">
           <button type="button" class="input-icon-btn" @click="setup.showOwnerPassword = !setup.showOwnerPassword" :aria-label="setup.showOwnerPassword ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ setup.showOwnerPassword ? '🙈' : '👁' }}</span></button>
         </div>
         <div class="field-row field-with-icon">
-          <input :type="setup.showOwnerConfirm ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.confirmPassword" v-model="setup.owner.confirmPassword" autocomplete="new-password">
+          <input :type="setup.showOwnerConfirm ? 'text' : 'password'" class="input input-with-icon" :placeholder="setup.t.confirmPassword" v-model="setup.owner.confirmPassword">
           <button type="button" class="input-icon-btn" @click="setup.showOwnerConfirm = !setup.showOwnerConfirm" :aria-label="setup.showOwnerConfirm ? 'Hide password' : 'Show password'"><span class="input-icon input-icon-eye">{{ setup.showOwnerConfirm ? '🙈' : '👁' }}</span></button>
         </div>
       </div>

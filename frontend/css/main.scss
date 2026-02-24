@@ -1,0 +1,6 @@
+/**
+ * Main stylesheet – Vue CDN base.
+ * Compiles to styles.css. Imports template-specific SCSS.
+ */
+@import 'template/home.scss';
+@import 'template/dashboard.scss';
